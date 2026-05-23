@@ -1,73 +1,214 @@
-# React + TypeScript + Vite
+# Omega Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern responsive SaaS-style admin dashboard built for the Front-End Internship Assignment.
 
-Currently, two official plugins are available:
+## Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+https://omega-dashboard-ivory.vercel.app/
 
-## React Compiler
+## GitHub Repository
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+https://github.com/Avansh2006/omega-dashboard
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# Features
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Dashboard Layout
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Responsive Sidebar Navigation
+- Top Navigation Bar
+- Main Content Area
+- User Profile Section
+- Fully Responsive Design (Desktop, Tablet & Mobile)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+# Product Management Module
+
+## Included Features
+
+- Product Listing Grid/Table
+- Product Images
+- Product Categories
+- Product Pricing
+- Stock Status
+- Product Ratings
+
+## Functionalities
+
+- Product Search
+- Multi-category Filtering
+- Sorting by:
+  - Price
+  - Rating
+  - Name
+- Pagination / Infinite Scrolling
+- URL State Synchronization
+
+### Example URL State
+
+```bash
+/products?category=smartphones&sort=price
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+# Product Detail Page
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Product Image Carousel
+- Product Description
+- Category Information
+- Ratings & Pricing Details
+
+---
+
+# Analytics Dashboard
+
+Includes:
+
+- Total Products
+- Average Rating
+- Total Inventory Value
+- Category Distribution
+- Visual Analytics & Charts
+
+---
+
+# Performance Optimizations
+
+Implemented the following optimizations:
+
+- Debounced Search
+- React.memo
+- useMemo
+- useCallback
+- Lazy Loading
+
+---
+
+# Tech Stack
+
+- React.js
+- Next.js
+- TypeScript
+- Tailwind CSS
+- Shadcn/UI
+- Recharts
+
+API Used:
+
+https://dummyjson.com/products
+
+---
+
+# Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Avansh2006/omega-dashboard.git
 ```
+
+Navigate to the project folder:
+
+```bash
+cd omega-dashboard
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run development server:
+
+```bash
+npm run dev
+```
+
+---
+
+# Deployment
+
+Deployed on Vercel:
+
+https://omega-dashboard-ivory.vercel.app/
+
+---
+
+# Folder Structure
+
+```bash
+src/
+ ├── components/
+ ├── pages/
+ ├── hooks/
+ ├── services/
+ ├── lib/
+ ├── utils/
+ ├── styles/
+ └── types/
+```
+
+---
+
+# Highlights
+
+- Clean and modern SaaS-inspired UI
+- Responsive across all devices
+- Optimized rendering and state handling
+- Scalable component-based architecture
+- URL synced filters for better UX
+- Fast and smooth interactions
+
+---
+
+# Assignment Requirements Covered
+
+## Dashboard Layout
+- Sidebar Navigation
+- Top Navigation Bar
+- Main Content Area
+- User Profile Section
+
+## Product Listing Module
+- Search
+- Filtering
+- Sorting
+- Pagination / Infinite Scroll
+
+## Product Detail Page
+- Carousel
+- Product Details
+
+## Analytics Dashboard
+- Product Metrics
+- Charts & Insights
+
+## Performance Optimization
+- Debouncing
+- Memoization
+- Lazy Loading
+
+## URL State Synchronization
+- Query Parameters for Filters & Sorting
+
+---
+
+# Author
+
+## Avansh Yadav
+
+GitHub:
+https://github.com/Avansh2006
+
+LinkedIn:
+(Add your LinkedIn URL here if you want)
+
+---
+
+# License
+
+This project was developed as part of a Front-End Internship Assignment.
