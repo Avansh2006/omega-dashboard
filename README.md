@@ -205,7 +205,7 @@ GitHub:
 https://github.com/Avansh2006
 
 LinkedIn:
-(Add your LinkedIn URL here if you want)
+https://www.linkedin.com/in/avanshyadav/
 
 ---
 
