@@ -29,7 +29,7 @@ export function useProducts() {
       setCategories(catData)
       setLastUpdated(new Date())
       setError(null)
-    } catch (e) {
+    } catch {
       setError('Failed to fetch products. Please try again.')
     } finally {
       setLoading(false)
@@ -37,7 +37,14 @@ export function useProducts() {
   }, [])
 
   // Initial fetch
-  useEffect(() => { fetchAll() }, [fetchAll])
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      if (cancelled) return
+      await fetchAll()
+    })()
+    return () => { cancelled = true }
+  }, [fetchAll])
 
   // Real-time polling (bonus feature)
   useEffect(() => {
@@ -57,12 +64,15 @@ export function useProduct(id: number) {
 
   useEffect(() => {
     if (!id) return
+    let cancelled = false
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true)
     fetch(`${BASE}/products/${id}`)
       .then(r => { if (!r.ok) throw new Error(); return r.json() })
-      .then(data => { setProduct(data); setError(null) })
-      .catch(() => setError('Product not found.'))
-      .finally(() => setLoading(false))
+      .then(data => { if (!cancelled) { setProduct(data); setError(null) } })
+      .catch(() => { if (!cancelled) setError('Product not found.') })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [id])
 
   return { product, loading, error }

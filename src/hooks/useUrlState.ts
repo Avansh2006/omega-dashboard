@@ -6,14 +6,14 @@ import type { FilterState, SortField, SortOrder } from '../types/product'
 export function useUrlState() {
   const [params, setParams] = useSearchParams()
 
-  const filters: FilterState = {
+  const filters: FilterState = useMemo(() => ({
     search:     params.get('q') ?? '',
     categories: params.get('category') ? params.get('category')!.split(',').filter(Boolean) : [],
     sortField:  (params.get('sort') as SortField) ?? 'title',
     sortOrder:  (params.get('order') as SortOrder) ?? 'asc',
     page:       Number(params.get('page') ?? '1'),
     minRating:  Number(params.get('rating') ?? '0'),
-  }
+  }), [params])
 
   const setFilters = useCallback((patch: Partial<FilterState>) => {
     setParams(prev => {
@@ -35,7 +35,7 @@ export function useUrlState() {
 
       return next
     }, { replace: true })
-  }, [params])
+  }, [filters, setParams])
 
   return { filters, setFilters }
 }

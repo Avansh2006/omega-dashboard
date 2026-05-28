@@ -15,6 +15,7 @@ export default function Layout({ children }: LayoutProps) {
 
   const handleToggle = useCallback(() => setCollapsed(c => !c), [])
   const handleMobileToggle = useCallback(() => setMobileOpen(o => !o), [])
+  const handleCloseMobileSidebar = useCallback(() => setMobileOpen(false), [])
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true)
@@ -32,7 +33,9 @@ export default function Layout({ children }: LayoutProps) {
 
       <Sidebar
         collapsed={collapsed}
+        mobileOpen={mobileOpen}
         onToggle={handleToggle}
+        onNavigate={handleCloseMobileSidebar}
       />
 
       <div className={`main-wrapper${collapsed ? ' sidebar-collapsed' : ''}`}>

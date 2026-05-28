@@ -3,16 +3,22 @@ import {
   LayoutDashboard, Package, BarChart2, Settings,
   ChevronLeft, ChevronRight, Bell
 } from 'lucide-react'
+import { useAuth } from '../../context/AuthContext'
 
 interface SidebarProps {
   collapsed: boolean
+  mobileOpen: boolean
   onToggle: () => void
+  onNavigate: () => void
 }
 
 
-export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export default function Sidebar({ collapsed, mobileOpen, onToggle, onNavigate }: SidebarProps) {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
+
   return (
-    <aside className={`sidebar${collapsed ? ' collapsed' : ''}`}>
+    <aside className={`sidebar${collapsed ? ' collapsed' : ''}${mobileOpen ? ' mobile-open' : ''}`}>
       {/* Logo */}
       <div className="sidebar-logo">
         <div className="logo-icon">N</div>
@@ -23,20 +29,24 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <nav className="sidebar-nav">
         <div className="nav-section-label">Main</div>
 
-        <NavLink to="/" end className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
-          <LayoutDashboard size={18} className="nav-icon" />
-          <span className="nav-label">Dashboard</span>
-        </NavLink>
+        {isAdmin && (
+          <NavLink to="/dashboard" className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`} onClick={onNavigate}>
+            <LayoutDashboard size={18} className="nav-icon" />
+            <span className="nav-label">Dashboard</span>
+          </NavLink>
+        )}
 
-        <NavLink to="/products" className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
+        <NavLink to="/products" className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`} onClick={onNavigate}>
           <Package size={18} className="nav-icon" />
           <span className="nav-label">Products</span>
         </NavLink>
 
-        <NavLink to="/?tab=analytics" className="nav-item">
-          <BarChart2 size={18} className="nav-icon" />
-          <span className="nav-label">Analytics</span>
-        </NavLink>
+        {isAdmin && (
+          <NavLink to="/dashboard" className="nav-item" onClick={onNavigate}>
+            <BarChart2 size={18} className="nav-icon" />
+            <span className="nav-label">Analytics</span>
+          </NavLink>
+        )}
 
         <div className="nav-section-label" style={{ marginTop: 12 }}>System</div>
 
@@ -62,10 +72,10 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       {/* User footer */}
       <div className="sidebar-footer">
         <div className="user-card">
-          <div className="avatar">AY</div>
+          <div className="avatar">{user?.initials ?? 'NA'}</div>
           <div className="user-info">
-            <div className="user-name">Avansh Yadav</div>
-            <div className="user-role">Administrator</div>
+            <div className="user-name">{user?.name ?? 'Guest'}</div>
+            <div className="user-role">{isAdmin ? 'Administrator' : 'Standard User'}</div>
           </div>
         </div>
       </div>

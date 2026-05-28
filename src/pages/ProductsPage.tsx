@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
+import type { SortField, SortOrder } from '../types/product'
 import { useNavigate } from 'react-router-dom'
 import { useProducts } from '../hooks/useProducts'
 import { useUrlState } from '../hooks/useUrlState'
@@ -7,6 +8,8 @@ import LoadingSpinner from '../components/UI/LoadingSpinner'
 import StarRating from '../components/UI/StarRating'
 import Pagination from '../components/UI/Pagination'
 import { Search, SlidersHorizontal, ArrowUpDown, MoveLeft, MoveRight } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+import { usePublication } from '../context/PublicationContext'
 
 interface Column {
   id: string
@@ -24,7 +27,8 @@ export default function ProductsPage() {
 
   // Sync state search input when URL changes
   useEffect(() => {
-    setSearchInput(filters.search)
+    const t = setTimeout(() => setSearchInput(filters.search), 0)
+    return () => clearTimeout(t)
   }, [filters.search])
 
   const debouncedSearch = useDebounce(searchInput, 400)
@@ -77,7 +81,7 @@ export default function ProductsPage() {
   }, [filters.categories, setFilters])
 
   // Sorting handlers
-  const handleSort = useCallback((field: any) => {
+  const handleSort = useCallback((field: SortField) => {
     const isSameField = filters.sortField === field
     const nextOrder = isSameField && filters.sortOrder === 'asc' ? 'desc' : 'asc'
     setFilters({ sortField: field, sortOrder: nextOrder })
@@ -118,30 +122,52 @@ export default function ProductsPage() {
       result = result.filter(p => p.rating >= filters.minRating)
     }
 
-    // Sorting
-    result.sort((a, b) => {
-      let aVal: any = a[filters.sortField as keyof typeof a]
-      let bVal: any = b[filters.sortField as keyof typeof b]
+    // Sorting using explicit field accessor to avoid `any`
+    const getField = (item: typeof result[0], field: SortField) => {
+      switch (field) {
+        case 'title': return String(item.title ?? '').toLowerCase()
+        case 'price': return Number(item.price ?? 0)
+        case 'rating': return Number(item.rating ?? 0)
+        case 'stock': return Number(item.stock ?? 0)
+        default: return String(item.title ?? '').toLowerCase()
+      }
+    }
 
-      if (typeof aVal === 'string') {
-        aVal = aVal.toLowerCase()
-        bVal = (bVal || '').toLowerCase()
+    result.sort((a, b) => {
+      const aVal = getField(a, filters.sortField)
+      const bVal = getField(b, filters.sortField)
+
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        if (aVal < bVal) return filters.sortOrder === 'asc' ? -1 : 1
+        if (aVal > bVal) return filters.sortOrder === 'asc' ? 1 : -1
+        return 0
       }
 
-      if (aVal < bVal) return filters.sortOrder === 'asc' ? -1 : 1
-      if (aVal > bVal) return filters.sortOrder === 'asc' ? 1 : -1
+      const na = Number(aVal)
+      const nb = Number(bVal)
+      if (na < nb) return filters.sortOrder === 'asc' ? -1 : 1
+      if (na > nb) return filters.sortOrder === 'asc' ? 1 : -1
       return 0
     })
 
     return result
   }, [allProducts, filters.search, filters.categories, filters.minRating, filters.sortField, filters.sortOrder])
 
+  // Enforce published-only visibility for non-admins
+  const { user } = useAuth()
+  const { isPublished, togglePublished } = usePublication()
+
+  const visibleProducts = useMemo(() => {
+    if (user?.role === 'admin') return processedProducts
+    return processedProducts.filter(p => isPublished(p.id))
+  }, [processedProducts, user, isPublished])
+
   // Pagination bounds
   const itemsPerPage = 8
   const paginatedProducts = useMemo(() => {
     const start = (filters.page - 1) * itemsPerPage
-    return processedProducts.slice(start, start + itemsPerPage)
-  }, [processedProducts, filters.page])
+    return visibleProducts.slice(start, start + itemsPerPage)
+  }, [visibleProducts, filters.page])
 
   // Stock badge helper
   const getStockBadge = (stock: number) => {
@@ -228,7 +254,7 @@ export default function ProductsPage() {
           value={`${filters.sortField}-${filters.sortOrder}`}
           onChange={e => {
             const [field, order] = e.target.value.split('-')
-            setFilters({ sortField: field as any, sortOrder: order as any })
+            setFilters({ sortField: field as unknown as SortField, sortOrder: order as unknown as SortOrder })
           }}
         >
           <option value="title-asc">Sort: A-Z</option>
@@ -345,6 +371,19 @@ export default function ProductsPage() {
                         return null
                     }
                   })}
+                  {/* Admin publish toggle column */}
+                  {user?.role === 'admin' && (
+                    <td key="publish">
+                      <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }} onClick={e => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={isPublished(p.id)}
+                          onChange={() => togglePublished(p.id)}
+                        />
+                        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{isPublished(p.id) ? 'Published' : 'Hidden'}</span>
+                      </label>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -353,7 +392,7 @@ export default function ProductsPage() {
 
         <Pagination
           page={filters.page}
-          total={processedProducts.length}
+          total={visibleProducts.length}
           perPage={itemsPerPage}
           onPage={p => setFilters({ page: p })}
         />
