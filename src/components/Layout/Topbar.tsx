@@ -1,5 +1,6 @@
-import { Bell, RefreshCw } from 'lucide-react'
-import { useLocation } from 'react-router-dom'
+import { Bell, RefreshCw, LogOut } from 'lucide-react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 interface TopbarProps {
   collapsed: boolean
@@ -18,6 +19,8 @@ export default function Topbar({
   collapsed, onMobileMenuToggle, lastUpdated, onRefresh, isRefreshing
 }: TopbarProps) {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { logout, user } = useAuth()
   const basePath = '/' + location.pathname.split('/')[1]
   const title = location.pathname.startsWith('/products/') ? 'Product Detail'
     : pageTitles[basePath] ?? 'Dashboard'
@@ -78,7 +81,18 @@ export default function Topbar({
         </div>
 
         {/* Avatar */}
-        <div className="avatar" style={{ cursor: 'pointer' }}>AY</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className="avatar" style={{ cursor: 'default' }}>{user?.initials ?? 'NA'}</div>
+          <button
+            className="icon-btn"
+            title="Logout"
+            aria-label="Logout"
+            onClick={() => { logout(); navigate('/login', { replace: true }) }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+          >
+            <LogOut size={16} />
+          </button>
+        </div>
       </div>
     </header>
   )
