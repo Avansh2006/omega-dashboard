@@ -309,7 +309,7 @@ export default function ProductsPage() {
                     <th
                       key={col.id}
                       className={isSortable ? `th-sortable${isSorted ? ' sorted' : ''}` : undefined}
-                      onClick={isSortable ? () => handleSort(col.id === 'name' ? 'title' : col.id) : undefined}
+                      onClick={isSortable ? () => handleSort((col.id === 'name' ? 'title' : col.id) as SortField) : undefined}
                     >
                       <div className="th-inner">
                         <span>{col.label}</span>

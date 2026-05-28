@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import type { FilterState, SortField, SortOrder } from '../types/product'
 
@@ -16,25 +16,17 @@ export function useUrlState() {
   }), [params])
 
   const setFilters = useCallback((patch: Partial<FilterState>) => {
-    setParams(prev => {
-      const next = new URLSearchParams(prev)
-      const merged = { ...filters, ...patch }
+    const merged = { ...filters, ...patch }
+    const next = new URLSearchParams()
 
-      if (merged.search)              next.set('q', merged.search)
-      else                            next.delete('q')
-      if (merged.categories.length)   next.set('category', merged.categories.join(','))
-      else                            next.delete('category')
-      if (merged.sortField !== 'title') next.set('sort', merged.sortField)
-      else                            next.delete('sort')
-      if (merged.sortOrder !== 'asc') next.set('order', merged.sortOrder)
-      else                            next.delete('order')
-      if (merged.page > 1)            next.set('page', String(merged.page))
-      else                            next.delete('page')
-      if (merged.minRating > 0)       next.set('rating', String(merged.minRating))
-      else                            next.delete('rating')
+    if (merged.search) next.set('q', merged.search)
+    if (merged.categories && merged.categories.length) next.set('category', merged.categories.join(','))
+    if (merged.sortField && merged.sortField !== 'title') next.set('sort', merged.sortField)
+    if (merged.sortOrder && merged.sortOrder !== 'asc') next.set('order', merged.sortOrder)
+    if (merged.page && merged.page > 1) next.set('page', String(merged.page))
+    if (merged.minRating && merged.minRating > 0) next.set('rating', String(merged.minRating))
 
-      return next
-    }, { replace: true })
+    setParams(next, { replace: true })
   }, [filters, setParams])
 
   return { filters, setFilters }
